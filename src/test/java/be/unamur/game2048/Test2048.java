@@ -6,6 +6,7 @@ import org.junit.Test;
 import be.unamur.game2048.controllers.*;
 import be.unamur.game2048.helpers.*;
 import be.unamur.game2048.models.*;
+import java.lang.reflect.Method;
 
 public class Test2048 {
 
@@ -304,4 +305,92 @@ public class Test2048 {
         assertTrue(gc.getHighestScore() == 0);
     }
 
+    @Test
+    public void testGetNearestPower2() {
+        Tile tile = new Tile(3);
+        assertEquals(4, tile.getValue());
+    }
+
+    @Test
+    public void testTileToStringNullValue() {
+        Tile tile = new Tile(0);
+        assertEquals("0", tile.toString());
+    }
+
+    @Test
+    public void testGridInitialization() {
+        Grid grid = new Grid();
+        for (int row = 0; row < GameParams.sideLength; row++) {
+            for (int col = 0; col < GameParams.sideLength; col++) {
+                assertNull(grid.getTile(row, col));
+            }
+        }
+    }
+
+    @Test
+    public void testSetAndGetTileByPosition() {
+        Grid grid = new Grid();
+        Tile tile = new Tile(8);
+        grid.setTile(5, tile);
+        assertEquals(tile, grid.getTile(5));
+    }
+
+    @Test
+    public void testClearMergedMultipleTiles() {
+        Grid grid = new Grid();
+        Tile tile1 = new Tile(4);
+        Tile tile2 = new Tile(8);
+        tile1.setMerged(true);
+        tile2.setMerged(true);
+        grid.setTile(1, tile1);
+        grid.setTile(2, tile2);
+
+        grid.clearMerged();
+        assertFalse(tile1.isMerged());
+        assertFalse(tile2.isMerged());
+    }
+
+    @Test
+    public void testMovesWhenGridIsFull() {
+        GameController gc = new GameController();
+        Tile[][] tiles = new Tile[GameParams.sideLength][GameParams.sideLength];
+        for (int i = 0; i < GameParams.sideLength; i++) {
+            for (int j = 0; j < GameParams.sideLength; j++) {
+                tiles[i][j] = new Tile(2);
+            }
+        }
+        gc.startGame(tiles);
+        assertFalse(gc.moveUp(false));
+        assertFalse(gc.moveDown(false));
+        assertFalse(gc.moveLeft(false));
+        assertFalse(gc.moveRight(false));
+    }
+
+    @Test
+    public void testLosingGame() {
+        try {
+            // Arrange
+            GameController gc = new GameController();
+            Tile[][] tiles = new Tile[GameParams.sideLength][GameParams.sideLength];
+            for (int i = 0; i < GameParams.sideLength; i++) {
+                for (int j = 0; j < GameParams.sideLength; j++) {
+                    tiles[i][j] = new Tile((i + j) % 2 == 0 ? 2 : 4);
+                }
+            }
+            gc.startGame(tiles);
+
+            // Act
+            Method method = GameController.class.getDeclaredMethod("movesAvailable");
+            method.setAccessible(true);
+            boolean result = (boolean) method.invoke(gc);
+
+            // Assert
+            assertFalse(result); // Aucun mouvement possible
+            assertEquals(GameState.over, gc.getGamestate()); // État du jeu : "game over"
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Test failed due to unexpected exception.", e);
+        }
+    }
 }
