@@ -352,18 +352,23 @@ public class Test2048 {
 
     @Test
     public void testMovesWhenGridIsFull() {
+        // Arrange
         GameController gc = new GameController();
         Tile[][] tiles = new Tile[GameParams.sideLength][GameParams.sideLength];
+    
         for (int i = 0; i < GameParams.sideLength; i++) {
             for (int j = 0; j < GameParams.sideLength; j++) {
-                tiles[i][j] = new Tile(2);
+                tiles[i][j] = new Tile((i + j) % 2 == 0 ? 2 : 4);
             }
         }
         gc.startGame(tiles);
-        assertFalse(gc.moveUp(false));
+    
+        // Act & Assert
+        assertFalse(gc.moveUp(false));   // Aucun mouvement possible
         assertFalse(gc.moveDown(false));
         assertFalse(gc.moveLeft(false));
         assertFalse(gc.moveRight(false));
     }
+
 
 }
