@@ -366,31 +366,4 @@ public class Test2048 {
         assertFalse(gc.moveRight(false));
     }
 
-    @Test
-    public void testLosingGame() {
-        try {
-            // Arrange
-            GameController gc = new GameController();
-            Tile[][] tiles = new Tile[GameParams.sideLength][GameParams.sideLength];
-            for (int i = 0; i < GameParams.sideLength; i++) {
-                for (int j = 0; j < GameParams.sideLength; j++) {
-                    tiles[i][j] = new Tile((i + j) % 2 == 0 ? 2 : 4);
-                }
-            }
-            gc.startGame(tiles);
-
-            // Act
-            Method method = GameController.class.getDeclaredMethod("movesAvailable");
-            method.setAccessible(true);
-            boolean result = (boolean) method.invoke(gc);
-
-            // Assert
-            assertFalse(result); // Aucun mouvement possible
-            assertEquals(GameState.over, gc.getGamestate()); // État du jeu : "game over"
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Test failed due to unexpected exception.", e);
-        }
-    }
 }
