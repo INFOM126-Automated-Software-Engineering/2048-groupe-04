@@ -16,6 +16,7 @@ public class Game {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
+            System.out.println("I'm Batman");
             JFrame f = new JFrame();
             f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             f.setTitle("2048");
